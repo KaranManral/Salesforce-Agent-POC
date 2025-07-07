@@ -1,103 +1,257 @@
-import Image from "next/image";
+// Home page for the job board application.
+// Displays job listings, job details modal, and application form modal.
+'use client';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { Briefcase, TrendingUp, Users, Building2, CheckCircle } from 'lucide-react';
+import { JobCard } from './components/JobCard';
+import { ApplicationForm } from './components/ApplicationForm';
+import { SearchFilters } from './components/SearchFilters';
+import { JobDetailModal } from './components/JobDetails';
+import { Job, CreateApplicationData } from './types';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // State for job data, UI flags, and filters
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isApplicationFormOpen, setIsApplicationFormOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [detailJob, setDetailJob] = useState<Job | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Fetch jobs from the API on mount
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  // Fetches job data from the backend API
+  const fetchJobs = async () => {
+    try {
+      const res = await fetch('/api/jobs');
+      if (!res.ok) throw new Error('Jobs fetch failed');
+      const data: Job[] = await res.json();
+      setJobs(data);
+    } catch (error) {
+      console.error('Failed to fetch jobs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filters jobs based on search, location, and type
+  const filteredJobs = useMemo(() => {
+    return jobs.filter(job => {
+      const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           job.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesLocation = !locationFilter || 
+                             job.location.toLowerCase().includes(locationFilter.toLowerCase());
+
+      const matchesType = !typeFilter || job.type === typeFilter;
+
+      return matchesSearch && matchesLocation && matchesType;
+    });
+  }, [jobs, searchQuery, locationFilter, typeFilter]);
+
+  // Opens the application form for a selected job
+  const handleApplyToJob = (job: Job) => {
+    setSelectedJob(job);
+    setIsApplicationFormOpen(true);
+  };
+
+  // Handles application form submission and shows success message
+  const handleSubmitApplication = async (applicationData: CreateApplicationData) => {
+    try {
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(applicationData),
+      });
+      
+      if (response.ok) {
+        setShowSuccessMessage(true);
+        setTimeout(() => setShowSuccessMessage(false), 5000);
+      }
+    } catch (error) {
+      console.error('Failed to submit application:', error);
+    }
+  };
+
+  // Opens the job details modal
+  const openJobDetail = (job: Job) => {
+    setDetailJob(job);
+  }
+
+  // Closes the application form modal
+  const closeApplicationForm = () => {
+    setIsApplicationFormOpen(false);
+    setSelectedJob(null);
+  };
+
+  if (loading) {
+    // Show loading spinner while jobs are being fetched
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading job board...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate job board statistics
+  const stats = {
+    totalJobs: jobs.length,
+    companies: new Set(jobs.map(job => job.company)).size,
+    recentJobs: jobs.filter(job => {
+      const jobDate = new Date(job.postDate);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return jobDate > weekAgo;
+    }).length
+};
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center">
+          <CheckCircle className="w-5 h-5 mr-2" />
+          Application submitted successfully!
+        </div>
+      )}
+
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <Briefcase className="w-8 h-8 text-blue-600 mr-3" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">JobBoard Pro</h1>
+                <p className="text-gray-600">Find your next career opportunity</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Briefcase className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Jobs</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.totalJobs}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Building2 className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Companies</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.companies}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center">
+              <div className="p-3 bg-amber-100 rounded-lg">
+                <Users className="w-6 h-6 text-amber-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">New This Week</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.recentJobs}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <SearchFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          locationFilter={locationFilter}
+          onLocationChange={setLocationFilter}
+          typeFilter={typeFilter}
+          onTypeChange={setTypeFilter}
+        />
+
+        {/* Jobs Grid */}
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {filteredJobs.length === jobs.length 
+                ? `All Jobs (${jobs.length})` 
+                : `Filtered Jobs (${filteredJobs.length} of ${jobs.length})`}
+            </h2>
+          </div>
+
+          {filteredJobs.length === 0 ? (
+            <div className="text-center py-12">
+              <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                {jobs.length === 0 ? 'No jobs posted yet' : 'No jobs match your filters'}
+              </h3>
+              <p className="text-gray-500 mb-6">
+                {jobs.length === 0 
+                  ? 'Be the first to post a job opportunity!'
+                  : 'Try adjusting your search criteria to find more opportunities.'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {filteredJobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onClick={openJobDetail}
+                  onApply={handleApplyToJob}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {/* Job Details */}
+          {detailJob && (
+        <JobDetailModal
+          job={detailJob}
+          onClose={() => setDetailJob(null)}
+        />
+      )}
+
+      {/* Application Form Modal */}
+      <ApplicationForm
+        job={selectedJob}
+        onSubmit={handleSubmitApplication}
+        onClose={closeApplicationForm}
+        isOpen={isApplicationFormOpen}
+      />
     </div>
   );
 }
