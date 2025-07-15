@@ -13,7 +13,8 @@ interface Message {
   timestamp: Date;
 }
 
-export default function ChatBot() {
+export default function ChatBot({jobApplicationNumber}: {jobApplicationNumber: string}) {
+
   // State for chat messages, input, and UI flags
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
@@ -25,6 +26,9 @@ export default function ChatBot() {
   const [isCreatingSession, setIsCreatingSession] = useState<boolean>(false);
   const [isClosingSession, setIsClosingSession] = useState<boolean>(false); // New state for closing session
   
+  // New state for terms and conditions agreement
+  const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -42,8 +46,15 @@ export default function ChatBot() {
     setIsCreatingSession(true);
 
     try {
-      const response = await fetch('/api/agent/session/create', {
+      const response = await fetch('/api/agent/session/create',  {
         method: 'POST',
+        body: JSON.stringify({
+          jobApplicationNumber: jobApplicationNumber,
+          termsAndConditionAgreed: termsAccepted
+        }),
+        headers:{
+          "Content-Type": "application/json",
+        }
       });
 
       if (!response.ok) {
@@ -66,7 +77,7 @@ export default function ChatBot() {
       }
     } catch (error) {
       console.error('Error starting session:', error);
-      alert('Could not start a new session. Please try again later.');
+      alert('Could not start a new session. Check URL once again.');
     } finally {
       setIsCreatingSession(false);
     }
@@ -84,7 +95,7 @@ export default function ChatBot() {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+      setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsSending(true);
     setIsTyping(true);
@@ -158,6 +169,7 @@ export default function ChatBot() {
         setMessages([]);
         setInputValue('');
         setIsSessionActive(false);
+        setTermsAccepted(false); // Also reset terms agreement
       } else {
         throw new Error('Failed to close session.');
       }
@@ -195,15 +207,30 @@ export default function ChatBot() {
       <div className="w-full max-w-4xl h-[700px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 flex flex-col overflow-hidden">
         
         {!isSessionActive ? (
-          <div className="flex flex-col items-center justify-center h-full gap-6">
+          <div className="flex flex-col items-center justify-center h-full gap-6 px-4">
             <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center">
               <Bot className="w-12 h-12 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-800 text-center">AI Assistant Ready</h1>
-            <p className="text-indigo-500">Click the button below to start your conversation.</p>
+            <p className="text-indigo-500 text-center">Please agree to the terms to start your conversation.</p>
+            
+            {/* Terms and Conditions Checkbox */}
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
+              />
+              <label htmlFor="terms" className="text-sm text-gray-600 select-none">
+                I agree to the <a href="#" onClick={(e) => e.preventDefault()} className="text-indigo-600 hover:underline">Terms and Conditions</a>
+              </label>
+            </div>
+
             <button
               onClick={handleStartSession}
-              disabled={isCreatingSession}
+              disabled={isCreatingSession || !termsAccepted}
               className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-lg"
             >
               {isCreatingSession ? (
