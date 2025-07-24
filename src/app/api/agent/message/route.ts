@@ -90,6 +90,14 @@ export async function POST(req: NextRequest) {
   // Extract message and variables from the request body
   const { msg, vars } = await req.json();
 
+  // Validate message length (2000 character limit)
+  if (msg && msg.length > 2000) {
+    return NextResponse.json(
+      { message: "error", error: "Message too long" },
+      { status: 400 }
+    );
+  }
+
   // Retrieve the chat session ID from cookies
   const chatSession = req.cookies.get("chatSession")?.value;
   let sessionId = "";

@@ -190,7 +190,7 @@ export function ApplicationForm({ job, onSubmit, onClose, isOpen }: ApplicationF
         <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
           <div className="flex-1">
             <div className="flex items-center mb-2">
-              <Briefcase className="w-6 h-6 text-blue-600 mr-3" />
+              <Briefcase className="w-6 h-6 text-adecco-red mr-3" />
               <h2 className="text-2xl font-bold text-gray-900">Apply for Position</h2>
             </div>
             <div className="text-gray-600">
@@ -200,7 +200,7 @@ export function ApplicationForm({ job, onSubmit, onClose, isOpen }: ApplicationF
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 text-gray-400 hover:text-adecco-red hover:bg-red-50 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -376,10 +376,10 @@ export function ApplicationForm({ job, onSubmit, onClose, isOpen }: ApplicationF
 
           {/* Submission Buttons */}
           <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-            <button type="button" onClick={onClose} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+            <button type="button" onClick={onClose} className="btn-adecco-secondary px-6 py-3 font-medium">
               Cancel
             </button>
-            <button type="submit" disabled={isSubmitting} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium">
+            <button type="submit" disabled={isSubmitting} className="btn-adecco-primary px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed font-medium">
               {isSubmitting ? 'Submitting...' : 'Submit Application'}
             </button>
           </div>
@@ -390,17 +390,17 @@ export function ApplicationForm({ job, onSubmit, onClose, isOpen }: ApplicationF
         .input-field, .textarea-field {
           width: 100%;
           padding: 0.75rem 1rem; /* Equivalent to py-3 px-4 */
-          border: 1px solid #D1D5DB; /* border-gray-300 */
+          border: 2px solid #D1D5DB; /* border-gray-300 */
           border-radius: 0.5rem; /* rounded-lg */
           transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
         .input-field:focus, .textarea-field:focus {
           outline: none;
-          border-color: transparent;
+          border-color: #EE2E24; /* Adecco Red */
           --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
           --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
           box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
-          --tw-ring-color: #3B82F6; /* ring-blue-500 */
+          --tw-ring-color: #EE2E24; /* Adecco Red */
         }
         .textarea-field {
           resize: vertical; /* Allow vertical resize, remove 'resize-none' from original */
@@ -408,14 +408,14 @@ export function ApplicationForm({ job, onSubmit, onClose, isOpen }: ApplicationF
         .form-checkbox { /* Basic styling for custom checkboxes if not using a Tailwind plugin */
           appearance: none;
           background-color: #fff;
-          border: 1px solid #D1D5DB;
+          border: 2px solid #D1D5DB;
           padding: 0;
           display: inline-block;
           position: relative;
         }
         .form-checkbox:checked {
-          background-color: #2563EB; /* text-blue-600 */
-          border-color: #2563EB;
+          background-color: #EE2E24; /* Adecco Red */
+          border-color: #EE2E24;
         }
         .form-checkbox:checked::before {
           content: '✔';

@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
+import { Inter } from 'next/font/google';
 import "./globals.css";
+
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
 
 export const metadata: Metadata = {
   title: "JobBoard Pro - Find Your Next Career Opportunity",
@@ -12,27 +18,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // <Head>
-  //       <script
-  //         dangerouslySetInnerHTML={{
-  //           __html: `
-  //             window.embedded_svc = window.embedded_svc || {};
-  //             window.embedded_svc.config = {
-  //               "OrganizationId": "00DgK000005gscD",
-  //               "DeveloperName": "Test_Pre_Screening_Agent",
-  //               "Url": "https://orgfarm-bfd12e0ae2-dev-ed.develop.my.salesforce-scrt.com"
-  //             };
-  //           `,
-  //         }}
-  //       />
-  //       {/* <script
-  //         src="https://https://orgfarm-bfd12e0ae2-dev-ed.develop.my.salesforce.com/embeddedservice/yourdeployment.js"
-  //         async
-  //       ></script> */}
-  //     </Head>
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={inter.variable}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className={`${inter.className} antialiased`}>{children}</body>
     </html>
   );
 }

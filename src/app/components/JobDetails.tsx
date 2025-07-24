@@ -29,7 +29,7 @@ export function JobDetailModal({ job, onClose }: Props) {
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            className="absolute top-4 right-4 text-gray-400 hover:text-adecco-red"
           >
             <X size={24} />
           </button>
@@ -38,7 +38,7 @@ export function JobDetailModal({ job, onClose }: Props) {
           <div className="mb-6 text-center">
             <h2 className="text-3xl font-extrabold text-gray-900 mb-2">{job.title}</h2>
             <p className="text-lg text-gray-600">
-              {job.company} <span className="mx-2">•</span> {job.location}
+              {job.company} <span className="mx-2 text-adecco-red">•</span> {job.location}
             </p>
             <p className="text-sm text-gray-500">
               Posted on {new Date(job.postDate).toLocaleDateString()}
@@ -62,7 +62,7 @@ export function JobDetailModal({ job, onClose }: Props) {
               {job.skills.split(',').map((skill, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                  className="px-3 py-1 bg-red-50 text-adecco-red border border-adecco-red rounded-full text-sm font-medium"
                 >
                   {skill.trim()}
                 </span>
@@ -74,7 +74,7 @@ export function JobDetailModal({ job, onClose }: Props) {
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 shadow-md transition"
+              className="btn-adecco-primary px-6 py-2 font-medium shadow-md"
             >
               Close
             </button>

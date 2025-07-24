@@ -32,14 +32,14 @@ export function JobCard({ job, onClick, onApply }: JobCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 group cursor-pointer" onClick={(e)=>{e.stopPropagation();onClick(job)}}>
+    <div className="card-adecco p-6 group cursor-pointer" onClick={(e)=>{e.stopPropagation();onClick(job)}}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-adecco-red transition-colors">
             {job.title}
           </h3>
           <div className="flex items-center text-gray-600 mb-2">
-            <Building2 className="w-4 h-4 mr-2" />
+            <Building2 className="w-4 h-4 mr-2 text-adecco-red" />
             <span className="font-medium">{job.company}</span>
           </div>
         </div>
@@ -47,16 +47,16 @@ export function JobCard({ job, onClick, onApply }: JobCardProps) {
 
       <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-600">
         <div className="flex items-center">
-          <MapPin className="w-4 h-4 mr-1" />
+          <MapPin className="w-4 h-4 mr-1 text-dusk-orange" />
           <span>{job.location}</span>
         </div>
         <div className="flex items-center">
-          <Clock className="w-4 h-4 mr-1" />
+          <Clock className="w-4 h-4 mr-1 text-poetic-green" />
           <span className="capitalize">{job.type.replace('-', ' ')}</span>
         </div>
         {formatSalary(job.salary_min, job.salary_max) && (
           <div className="flex items-center">
-            <DollarSign className="w-4 h-4 mr-1" />
+            <DollarSign className="w-4 h-4 mr-1 text-heavy-red" />
             <span>{formatSalary(job.salary_min, job.salary_max)}</span>
           </div>
         )}
@@ -72,7 +72,7 @@ export function JobCard({ job, onClick, onApply }: JobCardProps) {
         </span>
         <button
           onClick={(e) => {e.stopPropagation();onApply(job)}}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+          className="btn-adecco-primary inline-flex items-center text-sm cursor-pointer"
         >
           <Mail className="w-4 h-4 mr-2" />
           Apply Now

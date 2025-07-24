@@ -3,7 +3,7 @@
 'use client';
 
 import React from 'react';
-import { Search, MapPin, Briefcase, Filter } from 'lucide-react';
+import { Search, MapPin, Briefcase} from 'lucide-react';
 
 // Props for SearchFilters: current filter values and change handlers
 interface SearchFiltersProps {
@@ -24,11 +24,7 @@ export function SearchFilters({
   onTypeChange,
 }: SearchFiltersProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-      <div className="flex items-center mb-4">
-        <Filter className="w-5 h-5 text-gray-600 mr-2" />
-        <h3 className="text-lg font-semibold text-gray-900">Search & Filter Jobs</h3>
-      </div>
+    <div className="my-16">
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="relative">
@@ -38,7 +34,7 @@ export function SearchFilters({
             placeholder="Search job titles, companies..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-adecco-red focus:border-adecco-red transition-colors"
           />
         </div>
 
@@ -49,7 +45,7 @@ export function SearchFilters({
             placeholder="Location"
             value={locationFilter}
             onChange={(e) => onLocationChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-adecco-red focus:border-adecco-red transition-colors"
           />
         </div>
 
@@ -58,7 +54,7 @@ export function SearchFilters({
           <select
             value={typeFilter}
             onChange={(e) => onTypeChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none"
+            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-adecco-red focus:border-adecco-red transition-colors appearance-none"
           >
             <option value="">All Job Types</option>
             <option value="Full Time">Full Time</option>
